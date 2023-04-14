@@ -37,7 +37,7 @@ with tab2:
     "Score": [average_score, min_score, max_score],
   })
 
-  # Plot summary and all quizes charts
+  # Summary and all quizes charts
   col1, col2 = st.columns(2)
   with col1:
     fig = px.bar(summary_data, x="Statistic", y="Score", title="Summary Statistics", color_discrete_sequence=["#9EE6CF"])
@@ -59,8 +59,7 @@ with tab2:
 
   y_pred = regression_model.predict(X)
 
-  # Quiz scores with linear regression model
-
+  # Quiz scores with linear regression chart
   col3, col4 = st.columns(2)
   with col3:
     fig = px.scatter(quiz_data, x="Quiz Number", y="Score", text="Quiz", title="Linear Regression of Quiz Scores", color_discrete_sequence=["#9EE6CF"])
@@ -69,7 +68,7 @@ with tab2:
     fig.update_yaxes(title_text="Score")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
-  # Predicts next score create dataframe for previous and predicted
+  # Predicts next score, create dataframe for previous and predicted
   next_quiz_number = len(quiz_scores) + 1
   next_quiz_score = regression_model.predict(np.array([[next_quiz_number]]))[0][0]
 
