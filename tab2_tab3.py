@@ -31,12 +31,12 @@ with tab2:
   st.header("Quiz Scores by Topic")
 
   fig = px.line_polar(quiz_data, r='Score', theta='Quiz', line_close=True, range_r=[(min(quiz_scores)-5), max(quiz_scores)])
-
   # Change the range_r numbers color to black
-  fig.update_polars(angularaxis=dict(showline=True, linecolor="black", linewidth=2, gridcolor="white", gridwidth=1, tickfont=dict(color="white")))
+  fig.update_polars(angularaxis=dict(showline=True, linecolor="black", linewidth=2, gridcolor="white", gridwidth=1, tickfont=dict(color="black")))
 
   st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
+  st.markdown("This chart visualizes the areas of study you are doing well in and the areas you should study up on.")
 
   # Summary chart
   average_score = quiz_data["Score"].mean()
@@ -53,6 +53,7 @@ with tab2:
   fig.update_yaxes(title_text="Score")
   st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
+  st.markdown("This chart gives you a quick summary of your quiz scores")
   # Fit a linear regression model
   X = quiz_data["Quiz Number"].values.reshape(-1, 1)
   y = quiz_data["Score"].values.reshape(-1, 1)
@@ -69,6 +70,8 @@ with tab2:
   fig.update_yaxes(title_text="Score")
   st.plotly_chart(fig, theme=None, use_container_width=True)
 
+  st.markdown("This chart shows how you are trending this semster. If the chart is trending up, you are doing continuously getting better, if the chart is trending down, you may need to study more for your quizes.")
+
   # Predicts next score, creates dataframe for previous score and predicted
   next_quiz_number = len(quiz_scores) + 1
   next_quiz_score = regression_model.predict(np.array([[next_quiz_number]]))[0][0]
@@ -84,6 +87,8 @@ with tab2:
   fig.update_xaxes(title_text="")
   fig.update_yaxes(title_text="Score")
   st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+
+  st.markdown("This shows you your projected score for the next quiz next to what you got on the last quiz. If the projected score is lower then what you got on the last quiz, you should impliment the same study habits for this next quiz as you did last time.")
 
 with tab3:
 
@@ -140,14 +145,17 @@ with tab3:
   fig.update_yaxes(title_text="Score")
   st.plotly_chart(fig, theme=None, use_container_width=True)
 
+  st.markdown("This table shows how well the class in doing based on a trend in all of their quiz scores. If the class is trending downward you should think about giving them better resources and coming at the topics from a different approach.")
+
   # Create the table for performance on the last quiz
   fig = go.Figure()
 
   st.header("Class Quiz Scores")
+
   header_labels = ['Student', 'Test Name', 'Performance']
   for i, label in enumerate(header_labels):
-    fig.add_shape(type='rect', xref='x', yref='y', x0=i - 0.5, x1=i + 0.5, y0=len(latest_quiz_scores), y1=len(latest_quiz_scores) + 1, fillcolor='paleturquoise', line=dict(color='white'))
-    fig.add_annotation(x=i, y=len(latest_quiz_scores)+ 0.25, text=label, font=dict(size=12, color='black'), showarrow=False)
+    fig.add_shape(type='rect', xref='x', yref='y', x0=i - 0.5, x1=i + 0.5, y0=len(latest_quiz_scores), y1=len(latest_quiz_scores) + 1, fillcolor='rgba(0, 0, 0, 0.57)', line=dict(color='white'))
+    fig.add_annotation(x=i, y=len(latest_quiz_scores)+ 0.25, text=label, font=dict(size=12, color='white'), showarrow=False)
 
   for row, score in enumerate(latest_quiz_scores):
     green_percentage = score / 100
@@ -162,11 +170,12 @@ with tab3:
     fig.add_annotation(x=1, y=row + 0.5, text=quiz_names[-1], font=dict(size=11, color='black'), showarrow=False)
 
     # Add performance
-    fig.add_shape(type='rect', xref='x', yref='y', x0=1.5, x1=1.5 + green_percentage, y0=row, y1=row + 1, fillcolor='rgba(0, 255, 0, 1)', line=dict(color='white'))
-    fig.add_shape(type='rect', xref='x', yref='y', x0=1.5 + green_percentage, x1=2.5, y0=row, y1=row + 1, fillcolor='rgba(255, 0, 0, 1)', line=dict(color='white'))
+    fig.add_shape(type='rect', xref='x', yref='y', x0=1.5, x1=1.5 + green_percentage, y0=row, y1=row + 1, fillcolor='rgba(118, 255, 162, 0.77)', line=dict(color='white'))
+    fig.add_shape(type='rect', xref='x', yref='y', x0=1.5 + green_percentage, x1=2.5, y0=row, y1=row + 1, fillcolor='rgba(255, 91, 52, 0.57)', line=dict(color='white'))
     fig.add_annotation(x=2, y=row + 0.5, text=f"{score}%", font=dict(size=11, color='black'), showarrow=False)
 
   fig.update_xaxes(showgrid=False, zeroline=False, visible=False, range=[-0.5, 2.5])
   fig.update_yaxes(showgrid=False, zeroline=False, visible=False, range=[-0.5, len(latest_quiz_scores) + 0.5], autorange='reversed')
   fig.update_layout(title='Latest Quiz Performance', width=800, height=40 * (len(latest_quiz_scores) + 1), margin=dict(t=50, b=0, l=0, r=0))
   st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+  st.markdown("This table shows how each student performed on the last quiz. This will help you understand which students are underperforming so you can reach out to them.")
